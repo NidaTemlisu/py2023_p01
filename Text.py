@@ -1,5 +1,5 @@
 import os  # işletim sistemi etkileşimi için dizin yolları vs.
-import pdfminer # PDF okumak için
+import pdfplumber # PDF okumak için
 from fpdf import FPDF  # PDF oluşturmak için.
 
 
@@ -13,7 +13,7 @@ def menu():
 def extract_titles_from_pdf(pdf_path):
     titles = []
 
-    with pdfminer.open(pdf_path) as pdf:
+    with pdfplumber.open(pdf_path) as pdf:
         for page in pdf.pages:
             text = page.extract_text()
             titles.extend(text.split('\n'))
@@ -24,12 +24,13 @@ def extract_titles_from_pdf(pdf_path):
 def save_titles_to_pdf(titles):
     pdf = FPDF()
     pdf.add_page()
+    pdf.set_auto_page_break(auto=1, margin=15)
     pdf.set_font("Arial", size=12)
 
     for title in titles:
-        pdf.cell(200, 10, txt=title, ln=True)
+        pdf.cell(200, 10, txt=title.encode('latin-1', 'replace').decode('latin-1'),  ln=True)
 
-    pdf.output("newfile.pdf")
+    pdf.output("newfile.pdf", 'F')
 
 
 while True:
